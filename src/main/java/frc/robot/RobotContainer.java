@@ -35,13 +35,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  public static double voltage = 0;
-  private TalonFX AutoTalonFX = new TalonFX(17);
-  private TalonSRX AutoTalonSRX = new TalonSRX(0);
+  
   private CommandPS4Controller ps4Controller = new CommandPS4Controller(0);
 
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
+
+  private final Autotuning DaBiggestBird;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -49,8 +49,10 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    AutoTalonFX.setInverted(true);
-    AutoTalonFX.setNeutralMode(NeutralMode.Brake);
+    // 4 = Da Smallest Bird
+    // 14 = Da Small Bird
+    // 51 = Da Biggest Bird
+    DaBiggestBird = new Autotuning(true, 1);
     
     // Configure the trigger bindings
     configureBindings();
@@ -66,18 +68,9 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    // SmartDashboard.putNumber("Voltage Cap", 0);
-    SmartDashboard.putNumber("Seconds Increment", 0);
-    // SmartDashboard.putNumber("VoltageFX", 0);
-    // SmartDashboard.putData("AutoTuning TalonFX", new RunCommand( () -> AutoTalonFX.set(ControlMode.PercentOutput, Autotuning.voltagDouble(AutoTalonFX, SmartDashboard.getNumber("VoltageFX", 0)))));
-    // SmartDashboard.putData("Off", new RunCommand( () -> AutoTalonFX.set(ControlMode.PercentOutput, 0)));
-    ps4Controller.R2().whileTrue(increment());
-    ps4Controller.R2().onFalse(Commands.runOnce(() -> AutoTalonFX.set(ControlMode.PercentOutput, 0)));
-    ps4Controller.L2().whileTrue(decrement());
-    ps4Controller.L2().onFalse(Commands.runOnce(() -> AutoTalonFX.set(ControlMode.PercentOutput, 0)));
-    // SmartDashboard.putNumber("VoltageSRX", 0);
-    // SmartDashboard.putData("AutoTuning TalonSRX", new RunCommand(() -> AutoTalonSRX.set(ControlMode.PercentOutput, Autotuning.voltagDouble(AutoTalonSRX, SmartDashboard.getNumber("VoltageSRX", 0)))));
-    // SmartDashboard.putData("Off", new RunCommand( () -> AutoTalonSRX.set(ControlMode.PercentOutput, 0)));
+    ps4Controller.R2().whileTrue(DaBiggestBird.increment(1));
+    ps4Controller.L2().whileTrue(DaBiggestBird.decrement(1));
+
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     new Trigger(m_exampleSubsystem::exampleCondition)
         .onTrue(new ExampleCommand(m_exampleSubsystem));
@@ -98,26 +91,5 @@ public class RobotContainer {
   }
 
 
-  public Command increment(){
-    final double finalDouble = SmartDashboard.getNumber("Seconds Increment", 0);
-
-    return new ParallelCommandGroup(
-      Commands.repeatingSequence(
-        Commands.waitSeconds(finalDouble),
-        Commands.runOnce(() -> voltage += 0.05)
-      ),
-      Commands.run(() -> AutoTalonFX.set(ControlMode.PercentOutput, Autotuning.voltagDouble(AutoTalonFX, voltage)))
-    );
-  }
-  public Command decrement(){
-    final double finalDouble = SmartDashboard.getNumber("Seconds Increment", 0);
-
-    return new ParallelCommandGroup(
-      Commands.repeatingSequence(
-        Commands.waitSeconds(finalDouble),
-        Commands.runOnce(() -> voltage -= 0.05)
-      ),
-      Commands.run(() -> AutoTalonFX.set(ControlMode.PercentOutput, Autotuning.voltagDouble(AutoTalonFX, voltage)))
-    );
-  }
+  
 }
