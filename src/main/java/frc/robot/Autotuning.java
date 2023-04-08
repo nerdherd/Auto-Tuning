@@ -15,10 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Autotuning extends SubsystemBase{
 
     // Bind these in Robot Container
-    // ps4Controller.R2().whileTrue(_____.increment());
-    // ps4Controller.R2().onFalse(Commands.runOnce(() -> _____.setPower(0)));
-    // ps4Controller.L2().whileTrue(_____.decrement());
-    // ps4Controller.L2().onFalse(Commands.runOnce(() -> _____.setPower(0)));
+    // ps4Controller.R2().whileTrue(autoTuning.increment(1));
+    // ps4Controller.L2().whileTrue(autoTuning.decrement(1));
 
     public static double voltage = 0;
     private BaseTalon talon;
